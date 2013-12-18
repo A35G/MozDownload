@@ -17,9 +17,14 @@
  **/
  
   //  Firefox
-  define("vrs_firefox", "http://svn.mozilla.org/libs/product-details/json/firefox_versions.json");
-  define("dim_firefox", "http://svn.mozilla.org/libs/product-details/json/firefox_primary_builds.json");
+  define("vrs_list", json_encode(Array(
+    'firefox' => 'http://svn.mozilla.org/libs/product-details/json/firefox_versions.json',
+    'thunderbird' => 'http://svn.mozilla.org/libs/product-details/json/thunderbird_versions.json'
+    ))
+  );
 
-  //  Thunderbird
-  define("vrs_thunderbird", "http://svn.mozilla.org/libs/product-details/json/thunderbird_versions.json");
-  define("dim_firefox", "http://svn.mozilla.org/libs/product-details/json/thunderbird_primary_builds.json");
+  define("dim_list", json_encode(Array(
+    'firefox' => 'http://svn.mozilla.org/libs/product-details/json/firefox_primary_builds.json',
+    'thunderbird' => 'http://svn.mozilla.org/libs/product-details/json/thunderbird_primary_builds.json'
+    ))
+  );
