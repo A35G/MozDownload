@@ -1,21 +1,13 @@
 <?php
 
-/**
- *  MI Download Area - PoC
- *  vers. 0.0.1a - Oct 2013
- *  http://www.mozillaitalia.org/
- **/
- 
-  //  Database variables and parameters
-  define ( "host", "localhost" );
-  define ( "user", "root" );
-  define ( "password", "" );
-  define ( "databs", "mozillaitalia" );
-  
-/**
- *  URL SVN
- **/
- 
+/*
+  Mozilla Software Download - PoC
+  vers. 0.0.2a - Oct 2013
+
+  Thanks to MozillaItalia Staff & Community
+  http://www.mozillaitalia.org/
+*/
+
   //  Version List
   define('vrs_list', json_encode(Array(
     'firefox' => 'http://svn.mozilla.org/libs/product-details/json/firefox_versions.json',
@@ -31,5 +23,9 @@
     'seamonkey' => ''*/
     ))
   );
+
+  //  Download URL
+  define('dwn_list', 'https://download.mozilla.org/?product=%1$s&os=%2$s&lang=%3$s');
   
-  define('dwn_list', 'https://download.mozilla.org/?product=%1$s&os=%2$s&lang=%3$s');                                
+  // Default Language
+  define('lng_def', 'it');                                
