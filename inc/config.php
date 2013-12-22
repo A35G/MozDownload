@@ -16,15 +16,20 @@
  *  URL SVN
  **/
  
-  //  Firefox
-  define("vrs_list", json_encode(Array(
+  //  Version List
+  define('vrs_list', json_encode(Array(
     'firefox' => 'http://svn.mozilla.org/libs/product-details/json/firefox_versions.json',
-    'thunderbird' => 'http://svn.mozilla.org/libs/product-details/json/thunderbird_versions.json'
+    'thunderbird' => 'http://svn.mozilla.org/libs/product-details/json/thunderbird_versions.json'/*,
+    'seamonkey' => ''*/
     ))
   );
 
-  define("dim_list", json_encode(Array(
+  //  List of software dimension
+  define('dim_list', json_encode(Array(
     'firefox' => 'http://svn.mozilla.org/libs/product-details/json/firefox_primary_builds.json',
-    'thunderbird' => 'http://svn.mozilla.org/libs/product-details/json/thunderbird_primary_builds.json'
+    'thunderbird' => 'http://svn.mozilla.org/libs/product-details/json/thunderbird_primary_builds.json'/*,
+    'seamonkey' => ''*/
     ))
   );
+  
+  define('dwn_list', 'https://download.mozilla.org/?product=%1$s&os=%2$s&lang=%3$s');                                

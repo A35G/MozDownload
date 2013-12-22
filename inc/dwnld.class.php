@@ -30,6 +30,14 @@
 
     }
 
+    protected function infoUsr() {
+    
+      //  Predefined Language
+      $lng_usr = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+      return $lng_usr;
+    
+    }
+
     protected function svnUrl($prgname, $type_url) {
 
       $url_svn = '';
@@ -153,6 +161,10 @@
 
     public function getUrlProgm($prgname, $type_svn) {
       return $this->svnUrl($prgname, $type_svn);
+    }
+    
+    public function datailUsr() {
+      return $this->infoUsr();
     }
 
   }
