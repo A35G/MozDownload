@@ -1,9 +1,53 @@
 <?php
 
+/*
+  MIDownload - Script for downloading Mozilla programs
+  vers. 0.0.1 - December 2013
+  http://www.hackworld.it/ - http://www.gmcode.it/
+
+  Dedicated to my Best Friend and Brother: Giuseppe,
+  companion of many adventures and projects, adventures and ideas;
+  backbone of every day...THANKS!
+  
+  Stay Tuned 
+*/
+
   class MIDownload {
 
     var $version_info = vrs_list;
     var $dimn_info = dim_list;
+    private $info = array();
+    private $agent = "";
+
+    function __construct() {
+
+      $this->agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : NULL;
+      $this->info['lang_user'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : NULL;
+      $this->getOS();
+
+    }
+
+    protected function getOS(){
+      
+      $os_list = array(
+        "Windows"   =>    "/Windows/i",
+        "Linux"     =>    "/Linux/i",
+        "Unix"      =>    "/Unix/i",
+        "Mac"       =>    "/Mac/i"
+      );
+
+      foreach ($os_list as $key => $value){
+      
+        if (preg_match($value, $this->agent)) {
+          $this->info = array_merge($this->info, array("oper_sys" => $key));
+          break;
+        }
+      
+      }
+
+      return $this->info['oper_sys'];
+
+    }
 
     protected function getInfoVrs($prgname) {
 
@@ -31,9 +75,8 @@
     }
 
     protected function infoUsr() {
-    
-      //  Predefined Language
-      $lng_usr = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+ 
+      $lng_usr = $this->info['lang_user'] . " - " . $this->info['oper_sys'];
       return $lng_usr;
     
     }
@@ -105,10 +148,7 @@
 
       $url_svn = $this->svnUrl($prgname, $type_url);
 
-      if (preg_match("/^$regex$/", $url_svn))
-        $info_url = TRUE;
-      else
-        $info_url = FALSE;
+      $info_url = (preg_match("/^$regex$/", $url_svn)) ? true : false;
 
       return $info_url;
 
