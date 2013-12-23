@@ -30,10 +30,10 @@
     protected function getOS(){
       
       $os_list = array(
-        "Windows"   =>    "/Windows/i",
-        "Linux"     =>    "/Linux/i",
-        "Unix"      =>    "/Unix/i",
-        "Mac"       =>    "/Mac/i"
+        "win"   =>    "/Windows/i",
+        "linux"     =>    "/Linux/i",
+        //"Unix"      =>    "/Unix/i",
+        "osx"       =>    "/Mac/i"
       );
 
       foreach ($os_list as $key => $value){
@@ -58,7 +58,7 @@
       curl_setopt_array($curl, array(
           CURLOPT_RETURNTRANSFER => 1,
           CURLOPT_URL => "http://svn.mozilla.org/libs/product-details/json/firefox_versions.json",
-          //CURLOPT_USERAGENT => 'MozillaItalia Automatic Download Script - Beta version'
+          //CURLOPT_USERAGENT => 'GMCode.it - Automatic Download Script - Beta version'
       ));
 
       // Send the request & save response to $resp
