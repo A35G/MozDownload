@@ -67,7 +67,7 @@
       return $this->fix_text;    
     }
 
-    protected function getInfoVrs($prgname) {
+    protected function getInfoVrs($url_svn) {
 
       // Get cURL resource
       $curl = curl_init();
@@ -75,8 +75,9 @@
       // Set some options - we are passing in a useragent too here
       curl_setopt_array($curl, array(
           CURLOPT_RETURNTRANSFER => 1,
-          CURLOPT_URL => "http://svn.mozilla.org/libs/product-details/json/firefox_versions.json",
-          //CURLOPT_USERAGENT => 'GMCode.it - Automatic Download Script - Beta version'
+          CURLOPT_URL => $url_svn,
+          CURLOPT_USERAGENT => 'GMCode.it - Automatic Download Script - Beta 
+          version'
       ));
 
       // Send the request & save response to $resp
@@ -126,34 +127,26 @@
               $url_svn = (!empty($arr_data)) ? $arr_data : $this->fix_text['NTURL04'];
 
             } else {
-
               $url_svn = $this->fix_text['NTURL03'];
-
             }
 
           } else {
-
             $url_svn = $this->fix_text['NTURL02'];
-
           }
 
         } else {
-
           $url_svn = $this->fix_text['NTURL01'];
-
         }
 
       } else {
-
         $url_svn = $this->fix_text['NTAPP01'];
-
       }
 
       return $url_svn;
 
     }
 
-    protected function checkUrl($prgname, $type_url, $preld = '') {
+    protected function checkUrl($url_svn) {
 
       //  SCHEME
       $regex = "((https?|ftp)\:\/\/)?";
@@ -169,8 +162,6 @@
       $regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?";
       //  Anchor
       $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?";
-
-      $url_svn = $this->svnUrl($prgname, $type_url);
 
       $info_url = (preg_match("/^$regex$/", $url_svn)) ? true : false;
 
@@ -207,12 +198,17 @@
       return $contenuto;
     }
 
-    public function getVrs($prgname) {
-      return $this->getInfoVrs($prgname);
+    protected function infoProgram($prgm) {
+      $svn_file = $this->svnUrl($prgm, 'last_version');
+      if ($this->checkUrl($svn_file))
+        //return $svn_file;
+        return $this->getInfoVrs($svn_file);
+      else
+        die($this->fix_text['NTURL05']);
     }
 
-    public function validUrl($prgname, $type_svn) {
-      return $this->checkUrl($prgname, $type_svn);
+    public function getVrs($prgname) {
+      return $this->getInfoVrs($prgname);
     }
 
     public function getUrlProgm($prgname, $type_svn) {
@@ -221,6 +217,10 @@
     
     public function datailUsr() {
       return $this->infoUsr();
+    }
+
+    public function dataProgram($prgm) {
+      return $this->infoProgram($prgm);
     }
 
     public function getButtDownload($ts, $tpl) {
