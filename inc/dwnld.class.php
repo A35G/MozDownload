@@ -24,11 +24,15 @@
 
     function __construct() {
 
+      //  User Agent
       $this->agent = isset($_SERVER['HTTP_USER_AGENT']) ?
       $_SERVER['HTTP_USER_AGENT'] : NULL;
+      // Browser Lang
       $this->info['lang_user'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
       substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : NULL;
+      // OS User
       $this->getOS();
+      // Fix Text by Browser Lang
       $this->getLocale();
 
     }
@@ -119,29 +123,29 @@
             if (array_key_exists(htmlentities($prgname), $arr_v)) {
 
               $arr_data = $arr_v[htmlentities($prgname)];
-              $url_svn = (!empty($arr_data)) ? $arr_data : $this->errorAppl('NTURL04');
+              $url_svn = (!empty($arr_data)) ? $arr_data : $this->fix_text['NTURL04'];
 
             } else {
 
-              $url_svn = $this->errorAppl('NTURL03');
+              $url_svn = $this->fix_text['NTURL03'];
 
             }
 
           } else {
 
-            $url_svn = $this->errorAppl('NTURL02');
+            $url_svn = $this->fix_text['NTURL02'];
 
           }
 
         } else {
 
-          $url_svn = $this->errorAppl('NTURL01');
+          $url_svn = $this->fix_text['NTURL01'];
 
         }
 
       } else {
 
-        $url_svn = $this->errorAppl('NTAPP01');
+        $url_svn = $this->fix_text['NTAPP01'];
 
       }
 
@@ -174,6 +178,35 @@
 
     }
 
+    private function genButton($ts, $tpl) {
+
+      (@file_exists($tpl)) ? $this->buttond = @file_get_contents($tpl) : die("
+      Si &egrave; verificato un errore!<br /><br />Il file &quot;" . $tpl . "
+      &quot; non &egrave; presente");
+
+      if (@count($ts) > 0) {
+
+        foreach($ts as $t => $d)  {
+
+          $d = (@file_exists($d)) ? $this->getFile($d) : $d;
+          $this->buttond = @str_replace("{" . $t . "}", $d, $this->buttond);
+
+        }
+
+      } else {
+        die("Attenzione: impossibile eseguire il replace dei tags.");
+      }
+
+    }
+
+    private function getFile($doc) {
+      @ob_start();
+      include($doc);
+      $contenuto = @ob_get_contents();
+      @ob_end_clean();
+      return $contenuto;
+    }
+
     public function getVrs($prgname) {
       return $this->getInfoVrs($prgname);
     }
@@ -190,46 +223,9 @@
       return $this->infoUsr();
     }
 
-    private function genButton($ts, $tpl) {
-
-      (@file_exists($tpl)) ? $this->buttond = @file_get_contents($tpl) : die("
-      Si &egrave; verificato un errore!<br /><br />Il file &quot;" . $tpl . "
-      &quot; non &egrave; presente");
-      
-    	if (@count($ts) > 0) {
-      
-      	foreach($ts as $t => $d)  {
-        
-        	$d = (@file_exists($d)) ? $this->getFile($d) : $d;
-        	$this->buttond = @str_replace("{" . $t . "}", $d, $this->buttond);
-      	
-      	}
-
-    	} else {
-      
-      	die("Attenzione: impossibile eseguire il replace dei tags.");
-    	
-    	}
-
-  	}
-
-  	private function getFile($doc) {
-    	
-    	@ob_start();
-    	
-    	include($doc);
-    
-    	$contenuto = @ob_get_contents();
-    	
-    	@ob_end_clean();
-    	
-    	return $contenuto;
-  	
-  	}
-    
     public function getButtDownload($ts, $tpl) {
       $this->genButton($ts, $tpl);
-    	return $this->buttond;
-  	}
+      return $this->buttond;
+    }
 
   }
