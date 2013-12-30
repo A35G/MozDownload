@@ -8,7 +8,7 @@
   Dedicated to my Best Friend and Brother: Giuseppe,
   companion of many adventures and projects, adventures and ideas;
   backbone of every day...THANKS!
-  
+
   Stay Tuned 
 */
 
@@ -18,22 +18,27 @@
     var $dimn_info = dim_list;
     private $info = array();
     private $agent = "";
+    private $buttond;
+    private $data_svn = array();
+    private $fix_text;
 
     function __construct() {
 
-      $this->agent = isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : NULL;
-      $this->info['lang_user'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : NULL;
+      $this->agent = isset($_SERVER['HTTP_USER_AGENT']) ?
+      $_SERVER['HTTP_USER_AGENT'] : NULL;
+      $this->info['lang_user'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
+      substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : NULL;
       $this->getOS();
+      $this->getLocale();
 
     }
 
     protected function getOS(){
       
       $os_list = array(
-        "win"   =>    "/Windows/i",
-        "linux"     =>    "/Linux/i",
-        //"Unix"      =>    "/Unix/i",
-        "osx"       =>    "/Mac/i"
+        "win"     =>    "/Windows/i",
+        "linux"   =>    "/Linux/i",
+        "osx"     =>    "/Mac/i"
       );
 
       foreach ($os_list as $key => $value){
@@ -47,6 +52,15 @@
 
       return $this->info['oper_sys'];
 
+    }
+
+    protected function getLocale() {
+      if (($this->info['lang_user'] != NULL) && @file_exists("locale/".$this->
+      info['lang_user'].".php")) {
+        @include("locale/".$this->info['lang_user'].".php");
+        $this->fix_text = $xdc;
+      }
+      return $this->fix_text;    
     }
 
     protected function getInfoVrs($prgname) {
@@ -105,7 +119,6 @@
             if (array_key_exists(htmlentities($prgname), $arr_v)) {
 
               $arr_data = $arr_v[htmlentities($prgname)];
-
               $url_svn = (!empty($arr_data)) ? $arr_data : $this->errorAppl('NTURL04');
 
             } else {
@@ -138,56 +151,26 @@
 
     protected function checkUrl($prgname, $type_url, $preld = '') {
 
-      $regex = "((https?|ftp)\:\/\/)?"; // SCHEME
-      $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?"; // User and Pass
-      $regex .= "([a-z0-9-.]*)\.([a-z]{2,3})"; // Host or IP
-      $regex .= "(\:[0-9]{2,5})?"; // Port
-      $regex .= "(\/([a-z0-9+\$_-]\.?)+)*\/?"; // Path
-      $regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?"; // GET Query
-      $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?"; // Anchor
+      //  SCHEME
+      $regex = "((https?|ftp)\:\/\/)?";
+      //  User and Pass
+      $regex .= "([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?";
+      //  Host or IP
+      $regex .= "([a-z0-9-.]*)\.([a-z]{2,3})";
+      //  Port
+      $regex .= "(\:[0-9]{2,5})?";
+      //  Path
+      $regex .= "(\/([a-z0-9+\$_-]\.?)+)*\/?";
+      //  GET Query
+      $regex .= "(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?";
+      //  Anchor
+      $regex .= "(#[a-z_.-][a-z0-9+\$_.-]*)?";
 
       $url_svn = $this->svnUrl($prgname, $type_url);
 
       $info_url = (preg_match("/^$regex$/", $url_svn)) ? true : false;
 
       return $info_url;
-
-    }
-
-    public function errorAppl($code_err = '') {
-
-      $trad_code = '';
-
-      if (!empty($code_err)) {
-
-        switch(htmlentities($code_err)) {
-          case 'NTAPP01':
-            $trad_code = "Non &egrave; stata specificata l'applicazione di cui si vuole ricevere informazioni.";
-          break;
-          case 'NTERR00':
-            $trad_code = "Non &egrave; stato indicato il tipo di errore da visualizzare.";
-          break;
-          case 'NTURL01':
-            $trad_code = "Non &egrave; stata indicata la tipologia di indirizzo da visualizzare.";
-          break;
-          case 'NTURL02':
-            $trad_code = "Lista SVN non disponibile!";
-          break;
-          case 'NTURL03':
-            $trad_code = "Il programma indicato, non &egrave; in lista!";
-          break;
-          case 'NTURL04':
-            $trad_code = "URL SVN mancante, per il programma indicato!";
-          break;
-        }
-
-      } else {
-
-        $trad_code = self::errorAppl('NTERR00');
-
-      }
-
-      return $trad_code;
 
     }
 
@@ -206,5 +189,47 @@
     public function datailUsr() {
       return $this->infoUsr();
     }
+
+    private function genButton($ts, $tpl) {
+
+      (@file_exists($tpl)) ? $this->buttond = @file_get_contents($tpl) : die("
+      Si &egrave; verificato un errore!<br /><br />Il file &quot;" . $tpl . "
+      &quot; non &egrave; presente");
+      
+    	if (@count($ts) > 0) {
+      
+      	foreach($ts as $t => $d)  {
+        
+        	$d = (@file_exists($d)) ? $this->getFile($d) : $d;
+        	$this->buttond = @str_replace("{" . $t . "}", $d, $this->buttond);
+      	
+      	}
+
+    	} else {
+      
+      	die("Attenzione: impossibile eseguire il replace dei tags.");
+    	
+    	}
+
+  	}
+
+  	private function getFile($doc) {
+    	
+    	@ob_start();
+    	
+    	include($doc);
+    
+    	$contenuto = @ob_get_contents();
+    	
+    	@ob_end_clean();
+    	
+    	return $contenuto;
+  	
+  	}
+    
+    public function getButtDownload($ts, $tpl) {
+      $this->genButton($ts, $tpl);
+    	return $this->buttond;
+  	}
 
   }
