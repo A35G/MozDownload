@@ -49,7 +49,8 @@
       foreach ($os_list as $key => $value){
       
         if (preg_match($value, $this->agent)) {
-          $this->info = array_merge($this->info, array("oper_sys" => $key));
+          $this->info = array_merge($this->info, array("oper_sys" => $key, "
+          oper_sys_complete" => $value));
           break;
         }
       
@@ -94,13 +95,6 @@
 
     }
 
-    protected function infoUsr() {
- 
-      $lng_usr = $this->info['lang_user'] . " - " . $this->info['oper_sys'];
-      return $lng_usr;
-    
-    }
-
     protected function svnUrl($prgname, $type_url) {
 
       $url_svn = '';
@@ -127,7 +121,8 @@
             if (array_key_exists(htmlentities($prgname), $arr_v)) {
 
               $arr_data = $arr_v[htmlentities($prgname)];
-              $url_svn = (!empty($arr_data)) ? $arr_data : $this->fix_text['NTURL04'];
+              $url_svn = (!empty($arr_data)) ? $arr_data : $this->fix_text['
+              NTURL04'];
 
             } else {
               $url_svn = $this->fix_text['NTURL03'];
@@ -174,9 +169,8 @@
 
     private function genButton($ts, $tpl) {
 
-      (@file_exists($tpl)) ? $this->buttond = @file_get_contents($tpl) : die("
-      Si &egrave; verificato un errore!<br /><br />Il file &quot;" . $tpl . "
-      &quot; non &egrave; presente");
+      (@file_exists($tpl)) ? $this->buttond = @file_get_contents($tpl) : die(
+      sprintf($this->fix_text['NTERR01'], $tpl));
 
       if (@count($ts) > 0) {
 
@@ -188,7 +182,7 @@
         }
 
       } else {
-        die("Attenzione: impossibile eseguire il replace dei tags.");
+        die($this->fix_text['NTERR02']);
       }
 
     }
@@ -204,8 +198,6 @@
     protected function infoProgram($prgm) {
       $svn_file = $this->svnUrl($prgm, 'last_version');
       if ($this->checkUrl($svn_file)) {
-        //return $svn_file;
-        //return $this->getInfoVrs($svn_file);
         $this->data_svn = json_decode($this->getInfoVrs($svn_file), true);
         return $this->data_svn;
       } else {
@@ -217,7 +209,8 @@
       $bsl = "LATEST_" . strtoupper($prgm) . "_VERSION";
       if (array_key_exists($bsl, $this->data_svn)) {
         $prod_download = strtolower($prgm)."-".$this->data_svn[$bsl];
-        return sprintf($this->url_downl, $prod_download, $this->info['oper_sys'], $this->info['lang_user']);
+        return sprintf($this->url_downl, $prod_download, $this->info['oper_sys']
+        , $this->info['lang_user']);
       }
     }
 
@@ -229,20 +222,8 @@
       }
     }
 
-    public function getVrs($prgname) {
-      return $this->getInfoVrs($prgname);
-    }
-
-    public function getUrlProgm($prgname, $type_svn) {
-      return $this->svnUrl($prgname, $type_svn);
-    }
-    
-    public function datailUsr() {
-      return $this->infoUsr();
-    }
-
     public function dataProgram($prgm) {
-      /*return */$this->infoProgram($prgm);
+      $this->infoProgram($prgm);
     }
 
     public function getDownload($prgm) {
