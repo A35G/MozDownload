@@ -49,8 +49,8 @@
       foreach ($os_list as $key => $value){
       
         if (preg_match($value, $this->agent)) {
-          $this->info = array_merge($this->info, array("oper_sys" => $key, "
-          oper_sys_complete" => $value));
+          $this->info = array_merge($this->info, array("oper_sys" => $key, 
+          "oper_sys_complete" => $value));
           break;
         }
       
@@ -60,6 +60,12 @@
 
     }
 
+    protected function checkNameOS() {
+      $myos = str_replace ("/i", "", $this->info['oper_sys_complete']);
+      $myos = str_replace ("/", "", $myos);
+      return $myos;
+    }
+
     protected function getLocale() {
       if (($this->info['lang_user'] != NULL) && @file_exists("locale/".$this->
       info['lang_user'].".php")) {
@@ -67,6 +73,23 @@
         $this->fix_text = $xdc;
       }
       return $this->fix_text;    
+    }
+
+    protected function checkNameLang() {
+
+      if (isset($this->info['lang_user']) && !empty($this->info['lang_user'])) {
+        
+        @include("lib/lang.php");
+        
+        if (isset($lst_lang) && !empty($lst_lang) && is_array($lst_lang)) {
+
+          if (array_key_exists($this->info['lang_user'], $lst_lang))
+            return $lst_lang[$this->info['lang_user']];
+
+        }
+      
+      }
+
     }
 
     protected function getInfoVrs($url_svn) {
@@ -237,6 +260,14 @@
     public function getButtDownload($ts, $tpl) {
       $this->genButton($ts, $tpl);
       return $this->buttond;
+    }
+    
+    public function getNameLang() {
+      return $this->checkNameLang();
+    }
+    
+    public function getNameOS() {
+      return $this->checkNameOS();
     }
 
   }
