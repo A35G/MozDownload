@@ -45,6 +45,10 @@ body {
   background: url("http://mozorg.cdn.mozilla.net/media/img/sandstone/buttons/firefox-large.png?2013-06") no-repeat scroll 0px 0px transparent;
 }
 
+.thunderbird {
+  background: url("../images/usage-logo2.png") no-repeat scroll 0px 0px transparent;
+}
+
 .download-title {
   display: block;
   color: rgb(255, 255, 255);
