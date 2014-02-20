@@ -2,8 +2,11 @@
 
 /*
   MIDownload - Script for downloading Mozilla programs
-  vers. 0.0.1 - December 2013
+  Copyright © 2013 - 2014 Gianluigi 'A35G'
   http://www.hackworld.it/ - http://www.gmcode.it/
+
+  vers. 0.0.31 - February 2014
+  First release: vers. 0.0.1 - December 2013
 
   Dedicated to my Best Friend and Brother: Giuseppe,
   companion of many adventures and projects, adventures and ideas;
@@ -17,22 +20,30 @@
     var $version_info = vrs_list;
     var $dimn_info = dim_list;
     var $url_downl = dwn_list;
+    var $default_lang = lng_def;
     private $info = array();
     private $agent = "";
     private $buttond;
     private $data_svn = array();
     private $fix_text;
+    private $name_app;
 
     function __construct() {
 
       //  User Agent
       $this->agent = isset($_SERVER['HTTP_USER_AGENT']) ?
       $_SERVER['HTTP_USER_AGENT'] : NULL;
+
       // Browser Lang
       $this->info['lang_user'] = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ?
       substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2) : NULL;
+
+      if ($this->info['lang_user'] === NULL || empty($this->info['lang_user']))
+        $this->info['lang_user'] = $this->default_lang;
+
       // OS User
       $this->getOS();
+
       // Fix Text by Browser Lang
       $this->getLocale();
 
@@ -61,18 +72,26 @@
     }
 
     protected function checkNameOS() {
+
       $myos = str_replace ("/i", "", $this->info['oper_sys_complete']);
       $myos = str_replace ("/", "", $myos);
+
       return $myos;
+
     }
 
     protected function getLocale() {
+
       if (($this->info['lang_user'] != NULL) && @file_exists("locale/".$this->
       info['lang_user'].".php")) {
+
         @include("locale/".$this->info['lang_user'].".php");
         $this->fix_text = $xdc;
+
       }
+
       return $this->fix_text;    
+
     }
 
     protected function checkNameLang() {
@@ -211,50 +230,73 @@
     }
 
     private function getFile($doc) {
+
       @ob_start();
+
       include($doc);
       $contenuto = @ob_get_contents();
+
       @ob_end_clean();
+
       return $contenuto;
+
     }
 
-    protected function infoProgram($prgm) {
-      $svn_file = $this->svnUrl($prgm, 'last_version');
+    protected function infoProgram() {
+
+      $svn_file = $this->svnUrl($this->name_app, 'last_version');
+
       if ($this->checkUrl($svn_file)) {
+
         $this->data_svn = json_decode($this->getInfoVrs($svn_file), true);
         return $this->data_svn;
+
       } else {
+
         die($this->fix_text['NTURL05']);
+
       }
+
     }
 
-    protected function getLink($prgm) {
-      $bsl = "LATEST_" . strtoupper($prgm) . "_VERSION";
+    protected function getLink() {
+
+      $bsl = "LATEST_" . strtoupper($this->name_app) . "_VERSION";
+
       if (array_key_exists($bsl, $this->data_svn)) {
-        $prod_download = strtolower($prgm)."-".$this->data_svn[$bsl];
+
+        $prod_download = strtolower($this->name_app)."-".$this->data_svn[$bsl];
         return sprintf($this->url_downl, $prod_download, $this->info['oper_sys']
         , $this->info['lang_user']);
+
       }
+
     }
 
-    protected function getActualName($prgm) {
-      $bsl = "LATEST_" . strtoupper($prgm) . "_VERSION";
+    protected function getActualName() {
+
+      $bsl = "LATEST_" . strtoupper($this->name_app) . "_VERSION";
+
       if (array_key_exists($bsl, $this->data_svn)) {
-        $prod_download = ucfirst($prgm)." ".$this->data_svn[$bsl];
+
+        $prod_download = ucfirst($this->name_app)." ".$this->data_svn[$bsl];
         return $prod_download;
+
       }
+
     }
 
     public function dataProgram($prgm) {
-      $this->infoProgram($prgm);
+      $this->name_app = $prgm;
+      $this->infoProgram();
     }
 
-    public function getDownload($prgm) {
-      return $this->getLink($prgm);
+    public function getDownload() {
+      return $this->getLink();
     }
 
-    public function getNameAct($prgm) {
-      return $this->getActualName($prgm);
+    public function getNameAct() {
+      return $this->getActualName();
     }
 
     public function getButtDownload($ts, $tpl) {
@@ -268,6 +310,10 @@
     
     public function getNameOS() {
       return $this->checkNameOS();
+    }
+
+    public function getProg() {
+      return $this->name_app;
     }
 
   }
